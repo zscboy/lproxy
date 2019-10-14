@@ -1,0 +1,5 @@
+*.exe
+setting.json
+lproxy
+tuncfg.json
+domains.txt
