@@ -45,6 +45,8 @@ func (r *XRequest) free() {
 	r.tag++
 	r.uuid = ""
 	r.dev = nil
+
+	log.Printf("xrequest free, idx:%d, tag:%d", r.idx, r.tag)
 }
 
 func (r *XRequest) use(uuid string, port uint16, conn *websocket.Conn, dev *XDevice) {
@@ -59,7 +61,8 @@ func (r *XRequest) use(uuid string, port uint16, conn *websocket.Conn, dev *XDev
 func (r *XRequest) loopMsg() {
 	c := r.conn
 	if c == nil {
-		log.Panicln("xrequest loopmsg failed, nil conn")
+		log.Println("xrequest loopmsg failed, nil conn")
+		return
 	}
 
 	for {
@@ -116,7 +119,7 @@ func (r *XRequest) xClientCreate() {
 
 	dev := r.dev
 	new := make([]byte, 7)
-	new[0] = cmdReqClientClosed
+	new[0] = cmdReqCreated
 	binary.LittleEndian.PutUint16(new[1:], r.idx)
 	binary.LittleEndian.PutUint16(new[3:], r.tag)
 	binary.LittleEndian.PutUint16(new[5:], r.port)

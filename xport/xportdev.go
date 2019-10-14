@@ -42,6 +42,8 @@ func (d *XDevice) free() {
 	for _, r := range d.requests {
 		r.close()
 	}
+
+	log.Printf("XDevice free, uuid:%s", d.uuid)
 }
 
 func (d *XDevice) sendMsg(msg []byte) {
@@ -101,7 +103,7 @@ func (d *XDevice) handleRequestMsg(message []byte) {
 	case cmdReqData:
 		err := req.onData(message[5:])
 		if err != nil {
-			log.Printf("req.onData failed:", err)
+			log.Println("req.onData failed:", err)
 			req.close()
 		}
 

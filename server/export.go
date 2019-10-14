@@ -41,7 +41,7 @@ func newReqContext(r *http.Request, requiredUUID bool) *RequestContext {
 	UUID := ""
 
 	query := r.URL.Query()
-	tk := query.Get("uuid")
+	tk := query.Get("tok")
 	if requiredUUID {
 		var errCode int
 		// try to parse token to get UUID

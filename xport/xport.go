@@ -33,18 +33,20 @@ func xportServeLWS(ctx *server.RequestContext) {
 	query := ctx.Query
 	uuid := ctx.UUID
 	if uuid == "" {
-		ctx.Log.Panicln("invalid uuid")
+		ctx.Log.Println("invalid uuid")
+		return
 	}
 
 	capstr := query.Get("cap")
 	cap, err := strconv.Atoi(capstr)
 	if err != nil {
-		ctx.Log.Panicln("convert cap error:", err)
+		ctx.Log.Println("convert cap error:", err)
+		return
 	}
 
 	c, err := lwsupgrader.Upgrade(ctx.W, ctx.R)
 	if err != nil {
-		ctx.Log.Panicln("upgrade:", err)
+		ctx.Log.Println("upgrade:", err)
 		return
 	}
 
@@ -63,7 +65,8 @@ func xportServeLWS(ctx *server.RequestContext) {
 	new := newXDevice(uuid, c, cap)
 	_, ok = devices[uuid]
 	if ok {
-		ctx.Log.Panicln("try to add device conflict")
+		ctx.Log.Println("try to add device conflict")
+		return
 	}
 
 	devices[uuid] = new
@@ -80,27 +83,31 @@ func xportServeLWS(ctx *server.RequestContext) {
 func xportServeWebsocket(ctx *server.RequestContext) {
 	devUUID := ctx.Query.Get("uuid")
 	if devUUID == "" {
-		log.Panicln("no dev uuid provided")
+		log.Println("no dev uuid provided")
+		return
 	}
 
 	targetPortStr := ctx.Query.Get("port")
 	if targetPortStr == "" {
-		log.Panicln("no port provided")
+		log.Println("no port provided")
+		return
 	}
 
 	targetPort, err := strconv.Atoi(targetPortStr)
 	if err != nil {
-		log.Panicln("convert port failed:", err)
+		log.Println("convert port failed:", err)
+		return
 	}
 
 	xdev, ok := devices[devUUID]
 	if !ok {
-		log.Panicln("no dev found for uuid:", devUUID)
+		log.Println("no dev found for uuid:", devUUID)
+		return
 	}
 
 	c, err := upgrader.Upgrade(ctx.W, ctx.R, nil)
 	if err != nil {
-		log.Print("upgrade:", err)
+		log.Println("upgrade:", err)
 		return
 	}
 
@@ -111,7 +118,8 @@ func xportServeWebsocket(ctx *server.RequestContext) {
 	if xreq != nil {
 		xreq.loopMsg()
 	} else {
-		log.Panicln("failed to mount request into xdev")
+		log.Println("failed to mount request into xdev")
+		return
 	}
 }
 
