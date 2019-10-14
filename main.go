@@ -11,8 +11,8 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
-	_ "lproxy/xport"
 	_ "lproxy/handlers/auth"
+	_ "lproxy/xport"
 )
 
 var (
@@ -65,6 +65,8 @@ func main() {
 	}
 
 	log.Println("try to start  lproxy server, version:", server.GetVersion())
+
+	server.OnCfgLoaded()
 
 	// start http server
 	server.CreateHTTPServer()

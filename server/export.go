@@ -167,3 +167,24 @@ func RegisterGetHandleNoUUID(subPath string, handle RequestHandle) {
 
 	rootRouter.GET(path, wrapGetHandleInternal(handle, false))
 }
+
+var (
+	invokeHandlers []InvokeHandle
+)
+
+// InvokeHandle invoke handler
+type InvokeHandle func()
+
+// InvokeAfterCfgLoaded register a func called after cfg loaded
+func InvokeAfterCfgLoaded(fn InvokeHandle) {
+	invokeHandlers = append(invokeHandlers, fn)
+}
+
+// OnCfgLoaded notify that cfg has loaded
+func OnCfgLoaded() {
+	for _, invoke := range invokeHandlers {
+		invoke()
+	}
+
+	invokeHandlers = nil
+}

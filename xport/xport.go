@@ -2,6 +2,7 @@ package server
 
 import (
 	"lproxy/server"
+	"lproxy/servercfg"
 	"lproxy/xport/lws"
 	"strconv"
 
@@ -124,6 +125,8 @@ func xportServeWebsocket(ctx *server.RequestContext) {
 }
 
 func init() {
-	server.RegisterGetHandleNoUUID("/xportws", xportServeWebsocket)
-	server.RegisterGetHandle("/xportlws", xportServeLWS)
+	server.InvokeAfterCfgLoaded(func() {
+		server.RegisterGetHandleNoUUID(servercfg.XPortWebsocketPath, xportServeWebsocket)
+		server.RegisterGetHandle(servercfg.XPortLWSPath, xportServeLWS)
+	})
 }

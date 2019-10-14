@@ -87,5 +87,7 @@ func writeHTTPBodyWithGzip(ctx *server.RequestContext, bytesArray []byte) {
 }
 
 func init() {
-	server.RegisterPostHandleNoUUID("/auth", authHandle)
+	server.InvokeAfterCfgLoaded(func() {
+		server.RegisterPostHandleNoUUID(servercfg.AuthPath, authHandle)
+	})
 }

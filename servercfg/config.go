@@ -18,18 +18,15 @@ var (
 	RedisServer = ":6379"
 	ServerID    = ""
 
-	DbIP        = "localhost"
-	DbPort      = 1433
-	DbUser      = "abc"
-	DbPassword  = "ab"
-	DbName      = "gamedb"
 	ForTestOnly = false
+
 	AsHTTPS     = true
 	PfxLocation = "/home/abc/identity.pfx"
 	PfxPassword = "123456"
 
 	XPortLWSPath       = "/xportlws"
 	XPortWebsocketPath = "/xportws"
+	AuthPath           = "/auth"
 )
 
 var (
@@ -55,14 +52,17 @@ func ParseConfigFile(filepath string) bool {
 		Daemon      string `json:"daemon"`
 		RedisServer string `json:"redis_server"`
 		ServreID    string `json:"guid"`
-		DbIP        string `json:"dbIP"`
-		DbPort      int    `json:"dbPort"`
-		DbPassword  string `json:"dbPassword"`
-		DbUser      string `json:"dbUser"`
-		DbName      string `json:"dbName"`
 
 		DomiansFile string `json:"domainsfile"`
 		TunCfgFile  string `json:"tuncfgfile"`
+
+		PfxLocation        string `json:"pfx_location"`
+		PfxPassword        string `json:"pfx_password"`
+		XPortLWSPath       string `json:"xport_lwspath"`
+		XPortWebsocketPath string `json:"xport_wspath"`
+
+		AsHTTPS  bool   `json:"as_https"`
+		AuthPath string `json:"auth_path"`
 	}
 
 	loadedCfgFilePath = filepath
@@ -107,26 +107,6 @@ func ParseConfigFile(filepath string) bool {
 		ServerID = params.ServreID
 	}
 
-	if params.DbIP != "" {
-		DbIP = params.DbIP
-	}
-
-	if params.DbUser != "" {
-		DbUser = params.DbUser
-	}
-
-	if params.DbPassword != "" {
-		DbPassword = params.DbPassword
-	}
-
-	if params.DbName != "" {
-		DbName = params.DbName
-	}
-
-	if params.DbPort != 0 {
-		DbPort = params.DbPort
-	}
-
 	if ServerID == "" {
 		log.Println("Server id 'guid' must not be empty!")
 		return false
@@ -145,6 +125,28 @@ func ParseConfigFile(filepath string) bool {
 		loadTunCfgFromFile(params.TunCfgFile)
 		tuncfg.Domains = domains
 	}
+
+	if params.PfxLocation != "" {
+		PfxLocation = params.PfxLocation
+	}
+
+	if params.PfxPassword != "" {
+		PfxPassword = params.PfxPassword
+	}
+
+	if params.XPortLWSPath != "" {
+		XPortLWSPath = params.XPortLWSPath
+	}
+
+	if params.XPortWebsocketPath != "" {
+		XPortWebsocketPath = params.XPortWebsocketPath
+	}
+
+	if params.AuthPath != "" {
+		AuthPath = params.AuthPath
+	}
+
+	AsHTTPS = params.AsHTTPS
 
 	return true
 }
