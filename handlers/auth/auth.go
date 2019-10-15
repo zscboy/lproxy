@@ -46,7 +46,7 @@ func authHandle(ctx *server.RequestContext) {
 	response.Token = token
 	b, err := json.Marshal(response)
 	if err != nil {
-		ctx.Log.Println("authHandle, unmarshal body failed:", err)
+		ctx.Log.Println("authHandle, Marshal response failed:", err)
 		return
 	}
 
