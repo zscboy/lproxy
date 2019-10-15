@@ -8,6 +8,10 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+const (
+	maxMessageLength = (8*1024 - 2)
+)
+
 // XRequest device
 type XRequest struct {
 	uuid   string
@@ -69,6 +73,11 @@ func (r *XRequest) loopMsg() {
 		_, message, err := c.ReadMessage()
 		if err != nil {
 			log.Println("xrequest websocket read:", err)
+			break
+		}
+
+		if len(message) > maxMessageLength {
+			log.Println("xrequest message too large, must not great than:", maxMessageLength)
 			break
 		}
 
