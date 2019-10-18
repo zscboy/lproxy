@@ -13,7 +13,18 @@ var (
 
 // GetTunCfg get tunnel cfg
 func GetTunCfg() *TunCfg {
-	return tuncfg
+	b, e := json.Marshal(tuncfg)
+	if e != nil {
+		log.Panicln("GetTunCfg marshal failed:", e)
+	}
+
+	cfg := &TunCfg{}
+	e = json.Unmarshal(b, cfg)
+	if e != nil {
+		log.Panicln("GetTunCfg Unmarshal failed:", e)
+	}
+
+	return cfg
 }
 
 // TunCfg tunnel cfg

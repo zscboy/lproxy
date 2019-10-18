@@ -8,6 +8,7 @@ import (
 	"lproxy/servercfg"
 	"strings"
 
+	"github.com/blang/semver"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -25,6 +26,9 @@ type Response struct {
 type Request struct {
 	UUID    string `json:"uuid"`
 	Version string `json:"current_version"`
+
+	IsForCfgMonitor bool   `json:"is_cfgmonitor"`
+	DomainsVer      string `json:"domains_ver"`
 }
 
 func authHandle(ctx *server.RequestContext) {
@@ -42,7 +46,19 @@ func authHandle(ctx *server.RequestContext) {
 	response.NeedUpgrade = false
 
 	token := server.GenTK(req.UUID)
+	needDomains := true
+	if req.IsForCfgMonitor {
+		currentDomainsVer := req.DomainsVer
+		if semverLE(servercfg.DomainsCfgVer, currentDomainsVer) {
+			needDomains = false
+		}
+	}
+
 	response.TunCfg = servercfg.GetTunCfg()
+	if needDomains {
+		response.TunCfg.Domains = servercfg.GetDomains()
+	}
+
 	response.Token = token
 	b, err := json.Marshal(response)
 	if err != nil {
@@ -85,6 +101,16 @@ func writeHTTPBodyWithGzip(ctx *server.RequestContext, bytesArray []byte) {
 	} else {
 		ctx.W.Write(bytesArray)
 	}
+}
+
+func semverLE(v1v semver.Version, v2 string) bool {
+	v2v, e := semver.Make(v2)
+	if e != nil {
+		log.Println("semver.NewVersion failed:", e)
+		return false
+	}
+
+	return v1v.Compare(v2v) <= 0
 }
 
 func init() {
