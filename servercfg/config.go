@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"os"
 
+	"github.com/blang/semver"
 	log "github.com/sirupsen/logrus"
 
 	"github.com/DisposaBoy/JsonConfigReader"
@@ -27,6 +28,10 @@ var (
 	XPortLWSPath       = "/xportlws"
 	XPortWebsocketPath = "/xportws"
 	AuthPath           = "/auth"
+
+	UpgradeURL    = ""
+	NewVersionStr = "0.1.0"
+	NewVersion    semver.Version
 )
 
 var (
@@ -55,6 +60,9 @@ func ParseConfigFile(filepath string) bool {
 
 		DomiansFile string `json:"domainsfile"`
 		TunCfgFile  string `json:"tuncfgfile"`
+
+		UpgradeURL    string `json:"upgrade_url"`
+		NewVersionStr string `json:"new_version"`
 
 		PfxLocation        string `json:"pfx_location"`
 		PfxPassword        string `json:"pfx_password"`
@@ -146,6 +154,20 @@ func ParseConfigFile(filepath string) bool {
 	}
 
 	AsHTTPS = params.AsHTTPS
+
+	if params.UpgradeURL != "" {
+		UpgradeURL = params.UpgradeURL
+	}
+
+	if params.NewVersionStr != "" {
+		NewVersionStr = params.NewVersionStr
+	}
+
+	var e error
+	NewVersion, e = semver.Make(NewVersionStr)
+	if e != nil {
+		log.Fatalln("Config parse, failed to convert new version:", e)
+	}
 
 	return true
 }

@@ -46,25 +46,11 @@ func authHandle(ctx *server.RequestContext) {
 	response.NeedUpgrade = false
 
 	token := server.GenTK(req.UUID)
-	needDomains := true
-	if req.IsForCfgMonitor {
-		currentDomainsVer := req.DomainsVer
-		if semverLE(servercfg.DomainsCfgVer, currentDomainsVer) {
-			needDomains = false
-		} else {
-			log.Printf("authHandle, client cfg monitor, domain ver:%s old than current:%s, update", currentDomainsVer,
-				servercfg.DomainsCfgVerStr)
-		}
-	}
-
-	response.TunCfg = servercfg.GetTunCfg()
-	response.TunCfg.DomainsVer = servercfg.DomainsCfgVerStr
-
-	if needDomains {
-		response.TunCfg.Domains = servercfg.GetDomains()
-	}
-
 	response.Token = token
+
+	handleUpgrade(req, response)
+	handleDomains(req, response)
+
 	b, err := json.Marshal(response)
 	if err != nil {
 		ctx.Log.Println("authHandle, Marshal response failed:", err)
@@ -116,6 +102,45 @@ func semverLE(v1v semver.Version, v2 string) bool {
 	}
 
 	return v1v.Compare(v2v) <= 0
+}
+
+func handleDomains(req *Request, response *Response) {
+	needDomains := true
+	if req.IsForCfgMonitor {
+		currentDomainsVer := req.DomainsVer
+		if semverLE(servercfg.DomainsCfgVer, currentDomainsVer) {
+			needDomains = false
+		} else {
+			log.Printf("authHandle, client cfg monitor, domain ver:%s old than current:%s, update",
+				currentDomainsVer, servercfg.DomainsCfgVerStr)
+		}
+	}
+
+	response.TunCfg = servercfg.GetTunCfg()
+	response.TunCfg.DomainsVer = servercfg.DomainsCfgVerStr
+
+	if needDomains {
+		response.TunCfg.Domains = servercfg.GetDomains()
+	}
+}
+
+func handleUpgrade(req *Request, response *Response) {
+	if servercfg.UpgradeURL == "" {
+		// no upgrade config
+		return
+	}
+
+	needUpgrade := true
+	currentVer := req.Version
+	if semverLE(servercfg.NewVersion, currentVer) {
+		needUpgrade = false
+	} else {
+		log.Printf("authHandle, client ver:%s old than current:%s, upgrade", currentVer,
+			servercfg.NewVersionStr)
+	}
+
+	response.NeedUpgrade = needUpgrade
+	response.UpgradeURL = servercfg.UpgradeURL
 }
 
 func init() {
