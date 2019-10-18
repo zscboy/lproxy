@@ -64,11 +64,13 @@ func authHandle(ctx *server.RequestContext) {
 func writeHTTPBodyWithGzip(ctx *server.RequestContext, bytesArray []byte) {
 	gzipSupport := false
 
-	acceptContentEncodeStr := ctx.R.Header.Get("Accept-Encoding")
+	if len(bytesArray) >= 4*1024 {
+		acceptContentEncodeStr := ctx.R.Header.Get("Accept-Encoding")
 
-	if strings.Contains(acceptContentEncodeStr, "gzip") {
-		log.Println("client support gzip")
-		gzipSupport = true
+		if strings.Contains(acceptContentEncodeStr, "gzip") {
+			log.Println("client support gzip")
+			gzipSupport = true
+		}
 	}
 
 	if gzipSupport {
