@@ -121,6 +121,10 @@ func ParseConfigFile(filepath string) bool {
 		loadDomainsFromFile(params.DomiansFile)
 	}
 
+	if params.TunCfgFile != "" {
+		loadTunCfgFromFile(params.TunCfgFile)
+	}
+
 	if params.PfxLocation != "" {
 		PfxLocation = params.PfxLocation
 	}

@@ -53,5 +53,5 @@ func loadTunCfgFromFile(filepath string) {
 		log.Fatal(err)
 	}
 
-	tuncfgStr = []byte(content)
+	tuncfgStr = content
 }

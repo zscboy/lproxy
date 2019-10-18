@@ -51,13 +51,17 @@ func authHandle(ctx *server.RequestContext) {
 		currentDomainsVer := req.DomainsVer
 		if semverLE(servercfg.DomainsCfgVer, currentDomainsVer) {
 			needDomains = false
+		} else {
+			log.Printf("authHandle, client cfg monitor, domain ver:%s old than current:%s, update", currentDomainsVer,
+				servercfg.DomainsCfgVerStr)
 		}
 	}
 
 	response.TunCfg = servercfg.GetTunCfg()
+	response.TunCfg.DomainsVer = servercfg.DomainsCfgVerStr
+
 	if needDomains {
 		response.TunCfg.Domains = servercfg.GetDomains()
-		response.TunCfg.DomainsVer = servercfg.DomainsCfgVerStr
 	}
 
 	response.Token = token
