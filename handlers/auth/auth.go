@@ -57,6 +57,7 @@ func authHandle(ctx *server.RequestContext) {
 	response.TunCfg = servercfg.GetTunCfg()
 	if needDomains {
 		response.TunCfg.Domains = servercfg.GetDomains()
+		response.TunCfg.DomainsVer = servercfg.DomainsCfgVerStr
 	}
 
 	response.Token = token
