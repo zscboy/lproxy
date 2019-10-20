@@ -8,7 +8,6 @@ import (
 	"lproxy/servercfg"
 	"strings"
 
-	"github.com/blang/semver"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -27,8 +26,7 @@ type Request struct {
 	UUID    string `json:"uuid"`
 	Version string `json:"current_version"`
 
-	IsForCfgMonitor bool   `json:"is_cfgmonitor"`
-	DomainsVer      string `json:"domains_ver"`
+	Arch string `json:"arch"`
 }
 
 func authHandle(ctx *server.RequestContext) {
@@ -48,8 +46,8 @@ func authHandle(ctx *server.RequestContext) {
 	token := server.GenTK(req.UUID)
 	response.Token = token
 
-	handleUpgrade(req, response)
-	handleDomains(req, response)
+	handleUpgrade(req.Version, response)
+	handleDomains("", response)
 
 	b, err := json.Marshal(response)
 	if err != nil {
@@ -96,48 +94,17 @@ func writeHTTPBodyWithGzip(ctx *server.RequestContext, bytesArray []byte) {
 	}
 }
 
-func semverLE(v1v semver.Version, v2 string) bool {
-	v2v, e := semver.Make(v2)
-	if e != nil {
-		log.Println("semver.NewVersion failed:", e)
-		return false
-	}
-
-	return v1v.Compare(v2v) <= 0
-}
-
-func handleDomains(req *Request, response *Response) {
-	needDomains := true
-	if req.IsForCfgMonitor {
-		currentDomainsVer := req.DomainsVer
-		if semverLE(servercfg.DomainsCfgVer, currentDomainsVer) {
-			needDomains = false
-		} else {
-			log.Printf("authHandle, client cfg monitor, domain ver:%s old than current:%s, update",
-				currentDomainsVer, servercfg.DomainsCfgVerStr)
-		}
-	}
-
-	response.TunCfg = servercfg.GetTunCfg()
-	response.TunCfg.DomainsVer = servercfg.DomainsCfgVerStr
-
-	if needDomains {
-		response.TunCfg.Domains = servercfg.GetDomains()
-	}
-}
-
-func handleUpgrade(req *Request, response *Response) {
+func handleUpgrade(currentVerStr string, response *Response) {
 	if servercfg.UpgradeURL == "" {
 		// no upgrade config
 		return
 	}
 
 	needUpgrade := true
-	currentVer := req.Version
-	if semverLE(servercfg.NewVersion, currentVer) {
+	if semverLE(servercfg.NewVersion, currentVerStr) {
 		needUpgrade = false
 	} else {
-		log.Printf("authHandle, client ver:%s old than current:%s, upgrade", currentVer,
+		log.Printf("authHandle, client ver:%s old than current:%s, upgrade", currentVerStr,
 			servercfg.NewVersionStr)
 	}
 

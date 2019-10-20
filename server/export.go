@@ -47,6 +47,7 @@ func newReqContext(r *http.Request, requiredUUID bool) *RequestContext {
 		// try to parse token to get UUID
 		UUID, errCode = parseTK(tk)
 		if errCode != errTokenSuccess {
+			log.Printf("token parse error:%d for path:%s", errCode, r.URL.Path)
 			return nil
 		}
 	}

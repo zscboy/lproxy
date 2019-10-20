@@ -28,6 +28,7 @@ var (
 	XPortLWSPath       = "/xportlws"
 	XPortWebsocketPath = "/xportws"
 	AuthPath           = "/auth"
+	CfgMonitorPath     = "/cfgmonitor"
 
 	UpgradeURL    = ""
 	NewVersionStr = "0.1.0"
@@ -71,6 +72,8 @@ func ParseConfigFile(filepath string) bool {
 
 		AsHTTPS  bool   `json:"as_https"`
 		AuthPath string `json:"auth_path"`
+
+		CfgMonitorPath string `json:"cfg_monitor_path"`
 	}
 
 	loadedCfgFilePath = filepath
@@ -151,6 +154,10 @@ func ParseConfigFile(filepath string) bool {
 
 	if params.AuthPath != "" {
 		AuthPath = params.AuthPath
+	}
+
+	if params.CfgMonitorPath != "" {
+		CfgMonitorPath = params.CfgMonitorPath
 	}
 
 	AsHTTPS = params.AsHTTPS

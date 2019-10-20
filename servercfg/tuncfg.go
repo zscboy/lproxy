@@ -36,6 +36,7 @@ type TunCfg struct {
 	DNSTunnelNumber int    `json:"dns_tunnel_number"`
 	LocalDNSServer  string `json:"local_dns_server"`
 	XPortURL        string `json:"xport_url"`
+	CfgMonitorURL   string `json:"cfg_monitor_url"`
 
 	Domains    []string `json:"domain_array,omitempty"`
 	DomainsVer string   `json:"domains_ver,omitempty"`
