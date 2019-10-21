@@ -11,6 +11,7 @@ import (
 	"strconv"
 	"strings"
 	"time"
+	"lproxy/servercfg"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -26,11 +27,6 @@ const (
 	errTokenDecrypt = 2
 	errTokenFormat  = 3
 	errTokenExpired = 4
-)
-
-var (
-	// myKey token Key
-	mykey = []byte("@yymmxxkk#$yzilm")
 )
 
 func verifyToken(r *http.Request) (string, bool) {
@@ -52,7 +48,7 @@ func verifyToken(r *http.Request) (string, bool) {
 func GenTK(account string) string {
 	var plainTK = fmt.Sprintf("%s@%d", account, time.Now().Unix())
 	log.Println("GenTK, plainTK is:", plainTK)
-	return encrypt(mykey, plainTK)
+	return encrypt([]byte(servercfg.TokenKey), plainTK)
 }
 
 func parseTK(token string) (string, int) {
@@ -61,7 +57,7 @@ func parseTK(token string) (string, int) {
 		return "", errTokenEmpty
 	}
 
-	var plainTK, err = decrypt(mykey, token)
+	var plainTK, err = decrypt([]byte(servercfg.TokenKey), token)
 	if err != nil {
 		log.Println("ParseTK, err:", err)
 		return "", errTokenDecrypt

@@ -33,6 +33,8 @@ var (
 	UpgradeURL    = ""
 	NewVersionStr = "0.1.0"
 	NewVersion    semver.Version
+
+	TokenKey = "@yymmxxkk#$yzilm"
 )
 
 var (
@@ -74,6 +76,8 @@ func ParseConfigFile(filepath string) bool {
 		AuthPath string `json:"auth_path"`
 
 		CfgMonitorPath string `json:"cfg_monitor_path"`
+
+		TokenKey string `json:"token_key"`
 	}
 
 	loadedCfgFilePath = filepath
@@ -168,6 +172,10 @@ func ParseConfigFile(filepath string) bool {
 
 	if params.NewVersionStr != "" {
 		NewVersionStr = params.NewVersionStr
+	}
+
+	if params.TokenKey != "" {
+		TokenKey = params.TokenKey
 	}
 
 	var e error
