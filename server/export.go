@@ -7,6 +7,7 @@ import (
 
 	"github.com/julienschmidt/httprouter"
 	log "github.com/sirupsen/logrus"
+	grpc "google.golang.org/grpc"
 )
 
 // RequestContext simple http request context
@@ -188,4 +189,9 @@ func OnCfgLoaded() {
 	}
 
 	invokeHandlers = nil
+}
+
+// GetGRPCServer get grpc server
+func GetGRPCServer() *grpc.Server {
+	return grpcServer
 }

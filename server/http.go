@@ -15,13 +15,17 @@ import (
 	"github.com/julienschmidt/httprouter"
 	"github.com/rs/cors"
 	"golang.org/x/crypto/pkcs12"
+
+	grpc "google.golang.org/grpc"
+
+	"strings"
 )
 
 var (
 	// 根router，只有http server看到
 	rootRouter = httprouter.New()
-
-	rootPath = ""
+	grpcServer = grpc.NewServer()
+	rootPath   = ""
 )
 
 // GetVersion server version string
@@ -46,6 +50,19 @@ func echoVersion(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	w.Write([]byte(fmt.Sprintf("version:%s", GetVersion())))
 }
 
+type myGRPCMux struct {
+	originHandler http.Handler
+}
+
+func (my *myGRPCMux) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	if r.ProtoMajor == 2 && strings.HasPrefix(
+		r.Header.Get("Content-Type"), "application/grpc") {
+		grpcServer.ServeHTTP(w, r)
+	} else {
+		my.originHandler.ServeHTTP(w, r)
+	}
+}
+
 // acceptHTTPRequest 监听和接受HTTP
 func acceptHTTPRequest() {
 	var hh http.Handler
@@ -63,6 +80,10 @@ func acceptHTTPRequest() {
 	} else {
 		// 对外服务器不应该允许跨域访问
 		hh = rootRouter
+	}
+
+	mm := &myGRPCMux{
+		originHandler: hh,
 	}
 
 	portStr := fmt.Sprintf(":%d", servercfg.ServerPort)
@@ -87,12 +108,11 @@ func acceptHTTPRequest() {
 		config := &tls.Config{Certificates: []tls.Certificate{cert}}
 		s := &http.Server{
 			Addr:           portStr,
-			Handler:        hh,
+			Handler:        mm,
 			ReadTimeout:    5 * time.Second,
 			WriteTimeout:   5 * time.Second,
 			MaxHeaderBytes: 1 << 10,
 			TLSConfig:      config,
-			TLSNextProto:   make(map[string]func(*http.Server, *tls.Conn, http.Handler), 0),
 		}
 
 		log.Printf("Https server listen at:%d\n", servercfg.ServerPort)
@@ -104,7 +124,7 @@ func acceptHTTPRequest() {
 	} else {
 		s := &http.Server{
 			Addr:           portStr,
-			Handler:        hh,
+			Handler:        mm,
 			ReadTimeout:    5 * time.Second,
 			WriteTimeout:   5 * time.Second,
 			MaxHeaderBytes: 1 << 10,

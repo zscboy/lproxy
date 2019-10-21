@@ -13,6 +13,7 @@ import (
 
 	_ "lproxy/handlers/auth"
 	_ "lproxy/xport"
+	_ "lproxy/handlers/sayhello"
 )
 
 var (
