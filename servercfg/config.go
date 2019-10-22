@@ -30,16 +30,23 @@ var (
 	AuthPath           = "/auth"
 	CfgMonitorPath     = "/cfgmonitor"
 
-	UpgradeURL    = ""
-	NewVersionStr = "0.1.0"
-	NewVersion    semver.Version
-
 	TokenKey = "@yymmxxkk#$yzilm"
+
+	FirmwareMap = make(map[string]*FirmwareVersion)
 )
 
 var (
 	loadedCfgFilePath = ""
 )
+
+// FirmwareVersion firemware config
+type FirmwareVersion struct {
+	Arch          string `json:"arch"`
+	UpgradeURL    string `json:"upgrade_url"`
+	NewVersionStr string `json:"new_version"`
+
+	NewVersion semver.Version
+}
 
 // ReLoadConfigFile 重新加载配置
 func ReLoadConfigFile() bool {
@@ -64,9 +71,6 @@ func ParseConfigFile(filepath string) bool {
 		DomiansFile string `json:"domainsfile"`
 		TunCfgFile  string `json:"tuncfgfile"`
 
-		UpgradeURL    string `json:"upgrade_url"`
-		NewVersionStr string `json:"new_version"`
-
 		PfxLocation        string `json:"pfx_location"`
 		PfxPassword        string `json:"pfx_password"`
 		XPortLWSPath       string `json:"xport_lwspath"`
@@ -78,6 +82,8 @@ func ParseConfigFile(filepath string) bool {
 		CfgMonitorPath string `json:"cfg_monitor_path"`
 
 		TokenKey string `json:"token_key"`
+
+		FirmwareArray []*FirmwareVersion `json:"firmwares"`
 	}
 
 	loadedCfgFilePath = filepath
@@ -166,22 +172,18 @@ func ParseConfigFile(filepath string) bool {
 
 	AsHTTPS = params.AsHTTPS
 
-	if params.UpgradeURL != "" {
-		UpgradeURL = params.UpgradeURL
-	}
+	if len(params.FirmwareArray) > 0 {
+		for _, f := range params.FirmwareArray {
+			var e error
+			f.NewVersion, e = semver.Make(f.NewVersionStr)
+			if e != nil {
+				log.Fatalln("Config parse, failed to convert new version:", e)
+			}
 
-	if params.NewVersionStr != "" {
-		NewVersionStr = params.NewVersionStr
-	}
+			FirmwareMap[f.Arch] = f
+		}
 
-	if params.TokenKey != "" {
-		TokenKey = params.TokenKey
-	}
-
-	var e error
-	NewVersion, e = semver.Make(NewVersionStr)
-	if e != nil {
-		log.Fatalln("Config parse, failed to convert new version:", e)
+		log.Printf("config FirmwareMap:%+v", FirmwareMap)
 	}
 
 	return true

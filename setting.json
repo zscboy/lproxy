@@ -1,0 +1,26 @@
+{
+    "port": 8000,
+    "guid": "7484db72-deaf-40e9-8c18-586eb9e7ae04",
+    "domainsfile": "./domains.txt",
+    "tuncfgfile": "./tuncfg.json",
+    "pfx_location": "/home/abc/identity.pfx",
+    "pfx_password": "123456",
+    "xport_lwspath": "/xportLWSmN5ck4FTmboL5mAi1YD5Fn7rWNGResl9",
+    "xport_wspath": "/xportWSexAukZ7dpD7p3INgn5O735leTTn0YTXm",
+    "as_https": true,
+    "auth_path": "/auth",
+    "cfg_monitor_path": "/cfgmonitor",
+    "token_key": "@yymmxxkk#$yzilm",
+    "firmwares": [
+        {
+            "arch": "x86_64",
+            "new_version": "0.1.1",
+            "upgrade_url": "https://abc.com/ax86.0.1.1.bin"
+        },
+        {
+            "arch": "mipsel",
+            "new_version": "0.1.1",
+            "upgrade_url": "https://abc.com/axmipsel.0.1.1.bin"
+        }
+    ]
+}

@@ -46,7 +46,7 @@ func authHandle(ctx *server.RequestContext) {
 	token := server.GenTK(req.UUID)
 	response.Token = token
 
-	handleUpgrade(req.Version, response)
+	handleUpgrade(req.Arch, req.Version, response)
 	handleDomains("", response)
 
 	b, err := json.Marshal(response)
@@ -94,22 +94,23 @@ func writeHTTPBodyWithGzip(ctx *server.RequestContext, bytesArray []byte) {
 	}
 }
 
-func handleUpgrade(currentVerStr string, response *Response) {
-	if servercfg.UpgradeURL == "" {
+func handleUpgrade(arch string, currentVerStr string, response *Response) {
+	fm, ok := servercfg.FirmwareMap[arch]
+	if !ok {
 		// no upgrade config
 		return
 	}
 
 	needUpgrade := true
-	if semverLE(servercfg.NewVersion, currentVerStr) {
+	if semverLE(fm.NewVersion, currentVerStr) {
 		needUpgrade = false
 	} else {
 		log.Printf("authHandle, client ver:%s old than current:%s, upgrade", currentVerStr,
-			servercfg.NewVersionStr)
+			fm.NewVersionStr)
 	}
 
 	response.NeedUpgrade = needUpgrade
-	response.UpgradeURL = servercfg.UpgradeURL
+	response.UpgradeURL = fm.UpgradeURL
 }
 
 func init() {

@@ -35,7 +35,7 @@ func cfgMonitorHandle(ctx *server.RequestContext) {
 
 	response.Token = ""
 
-	handleUpgrade(req.Version, response)
+	handleUpgrade(req.Arch, req.Version, response)
 	handleDomains(req.DomainsVer, response)
 
 	b, err := json.Marshal(response)
