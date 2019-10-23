@@ -14,7 +14,7 @@ import (
 	_ "lproxy/handlers/auth"
 	_ "lproxy/xport"
 	_ "lproxy/handlers/sayhello"
-	_ "lproxy/handlers/bwreport"
+	_ "lproxy/handlers/dv"
 )
 
 var (

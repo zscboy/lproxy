@@ -1,4 +1,4 @@
-package bwreport
+package dv
 
 import (
 	context "context"
@@ -9,6 +9,7 @@ import (
 
 type myReportService struct {
 }
+type myDvImportService struct{}
 
 func (s *myReportService) Report(c context.Context, r *BandwidthStatistics) (*ReportResult, error) {
 	statistics := r.GetStatistics()
@@ -21,9 +22,18 @@ func (s *myReportService) Report(c context.Context, r *BandwidthStatistics) (*Re
 	return reply, nil
 }
 
+func (s *myDvImportService) PullCfg(ctx context.Context, req *CfgPullRequest) (*CfgPullResult, error) {
+	log.Println("gRPC PullCfg called, uuid:", req.GetUuid())
+
+	reply := &CfgPullResult{Code: 0, BandwidthLimitKbs: 1000}
+
+	return reply, nil
+}
+
 func init() {
 	server.InvokeAfterCfgLoaded(func() {
 		s := server.GetGRPCServer()
 		RegisterBandwidthReportServer(s, &myReportService{})
+		RegisterDeviceCfgPullServer(s, &myDvImportService{})
 	})
 }

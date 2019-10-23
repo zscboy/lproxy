@@ -26,8 +26,7 @@ func GetTunCfg() *TunCfg {
 // TunCfg tunnel cfg
 type TunCfg struct {
 	TunnelNumber    int    `json:"tunnel_number"`
-	WebsocketURL    string `json:"websocket_url"`
-	DNSTunURL       string `json:"dns_tun_url"`
+	TunnelURL       string `json:"tunnel_url"`
 	LocalServer     string `json:"local_server"`
 	TunnelReqCap    int    `json:"tunnel_req_cap"`
 	RelayDomain     string `json:"relay_domain"`

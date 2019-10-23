@@ -1,16 +1,15 @@
 {
     "tunnel_number": 4,
-    "websocket_url": "wss://localhost:8080/abc",
+    "tunnel_url": "wss://localhost:8080/abc",
     "local_server": "127.0.0.1:5000",
     "tunnel_req_cap": 1000,
     "relay_domain": "127.0.0.1",
     "relay_port": 8080,
     "local_tcp_port": 5000,
     "dns_udp_addr": "127.0.0.1:5000",
-    "dns_tun_url": "wss://localhost:8080/efg",
     "dns_tunnel_number": 1,
     "domain_array": [],
     "local_dns_server": "223.5.5.5:53",
     "xport_url": "wss://localhost:8000/xportLWSmN5ck4FTmboL5mAi1YD5Fn7rWNGResl9",
-    "cfg_monitor_url":"https://localhost:8000/cfgmonitor"
+    "cfg_monitor_url": "https://localhost:8000/cfgmonitor"
 }
