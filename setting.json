@@ -11,6 +11,7 @@
     "auth_path": "/auth",
     "cfg_monitor_path": "/cfgmonitor",
     "token_key": "@yymmxxkk#$yzilm",
+    "bandwidth_kbs": 0,
     "firmwares": [
         {
             "arch": "x86_64",

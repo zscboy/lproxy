@@ -30,6 +30,8 @@ var (
 	AuthPath           = "/auth"
 	CfgMonitorPath     = "/cfgmonitor"
 
+	BandwidthKbs = 0
+
 	TokenKey = "@yymmxxkk#$yzilm"
 
 	FirmwareMap = make(map[string]*FirmwareVersion)
@@ -84,6 +86,8 @@ func ParseConfigFile(filepath string) bool {
 		TokenKey string `json:"token_key"`
 
 		FirmwareArray []*FirmwareVersion `json:"firmwares"`
+
+		BandwidthKbs int `json:"bandwidth_kbs"`
 	}
 
 	loadedCfgFilePath = filepath
@@ -170,6 +174,7 @@ func ParseConfigFile(filepath string) bool {
 		CfgMonitorPath = params.CfgMonitorPath
 	}
 
+	BandwidthKbs = params.BandwidthKbs
 	AsHTTPS = params.AsHTTPS
 
 	if len(params.FirmwareArray) > 0 {
