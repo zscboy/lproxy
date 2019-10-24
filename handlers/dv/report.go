@@ -25,7 +25,7 @@ func (s *myReportService) Report(c context.Context, r *BandwidthStatistics) (*Re
 func (s *myDvImportService) PullCfg(ctx context.Context, req *CfgPullRequest) (*CfgPullResult, error) {
 	log.Println("gRPC PullCfg called, uuid:", req.GetUuid())
 
-	reply := &CfgPullResult{Code: 0, BandwidthLimitKbs: 1000}
+	reply := &CfgPullResult{Code: 0, BandwidthLimitKbs: 0}
 
 	return reply, nil
 }
