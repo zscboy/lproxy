@@ -33,7 +33,7 @@ func cfgMonitorHandle(ctx *server.RequestContext) {
 	response.Restrart = false
 	response.NeedUpgrade = false
 
-	response.Token = ""
+	response.Token = ctx.Query.Get("tok")
 
 	handleUpgrade(req.Arch, req.Version, response)
 	handleDomains(req.DomainsVer, response)
