@@ -7,11 +7,11 @@ import (
 	"encoding/base64"
 	"fmt"
 	"io"
+	"lproxy/servercfg"
 	"net/http"
 	"strconv"
 	"strings"
 	"time"
-	"lproxy/servercfg"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -47,7 +47,7 @@ func verifyToken(r *http.Request) (string, bool) {
 // GenTK 生成一个加密的token
 func GenTK(account string) string {
 	var plainTK = fmt.Sprintf("%s@%d", account, time.Now().Unix())
-	log.Println("GenTK, plainTK is:", plainTK)
+	// log.Println("GenTK, plainTK is:", plainTK)
 	return encrypt([]byte(servercfg.TokenKey), plainTK)
 }
 
